@@ -45,6 +45,7 @@ const AuthPage: React.FC = () => {
                     brandAccent: '#e35d05',
                   },
                 },
+
               },
               className: {
                 container: 'auth-container',

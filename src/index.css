@@ -55,3 +55,32 @@
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent;
   }
 }
+
+/* Supabase Auth UI Dark Theme Styles */
+.dark input {
+  background-color: #374151 !important;
+  border: 1px solid #4B5563 !important;
+  color: #ffffff !important;
+}
+
+.dark input:focus {
+  border-color: #f2750a !important;
+  box-shadow: 0 0 0 2px rgba(242, 117, 10, 0.2) !important;
+}
+
+.dark label {
+  color: #d1d5db !important;
+}
+
+.dark button {
+  background-color: #f2750a !important;
+  color: white !important;
+}
+
+.dark button:hover {
+  background-color: #e35d05 !important;
+}
+
+.dark a {
+  color: #f2750a !important;
+}
