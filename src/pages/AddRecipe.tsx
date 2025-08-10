@@ -12,6 +12,8 @@ const AddRecipe: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [userRecipeCount, setUserRecipeCount] = useState(0);
+  const [canAddRecipe, setCanAddRecipe] = useState(true);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -34,13 +36,30 @@ const AddRecipe: React.FC = () => {
     setCategories(data || []);
   };
 
+  const checkRecipeLimit = async () => {
+    if (!user) return;
+    
+    const { count, error } = await supabase
+      .from('recipes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      setUserRecipeCount(count || 0);
+      setCanAddRecipe((count || 0) < 5);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
-  }, []);
+    if (user) {
+      checkRecipeLimit();
+    }
+  }, [user]);
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -48,16 +67,46 @@ const AddRecipe: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Sign In</h2>
-          <p className="text-gray-600 mb-4">You need to be logged in to add recipes.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Please Sign In</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">You need to be logged in to add recipes.</p>
           <button
             onClick={() => navigate('/auth')}
             className="btn-primary"
           >
             Sign In
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!canAddRecipe) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="bg-yellow-100 dark:bg-yellow-900/20 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+            <span className="text-2xl">🍳</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Recipe Limit Reached</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            You've reached the maximum limit of 5 recipes ({userRecipeCount}/5). To add more recipes, please contact our support team or upgrade your account.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => navigate('/my-recipes')}
+              className="btn-secondary"
+            >
+              View My Recipes
+            </button>
+            <button
+              onClick={() => navigate('/contact')}
+              className="btn-primary"
+            >
+              Contact Support
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -201,16 +250,21 @@ const AddRecipe: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4 sm:py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Add New Recipe</h1>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Add New Recipe</h1>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {userRecipeCount}/5 recipes used
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Recipe Title *
                 </label>
                 <input
@@ -224,7 +278,7 @@ const AddRecipe: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Category *
                 </label>
                 <select
@@ -244,7 +298,7 @@ const AddRecipe: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description *
               </label>
               <textarea
@@ -258,9 +312,9 @@ const AddRecipe: React.FC = () => {
             </div>
 
             {/* Recipe Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Difficulty
                 </label>
                 <select
@@ -275,7 +329,7 @@ const AddRecipe: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Cooking Time (minutes)
                 </label>
                 <input
@@ -291,10 +345,10 @@ const AddRecipe: React.FC = () => {
 
             {/* Image Upload */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Recipe Image
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
                 {imagePreview ? (
                   <div className="relative">
                     <img
@@ -315,8 +369,8 @@ const AddRecipe: React.FC = () => {
                   </div>
                 ) : (
                   <div>
-                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">Upload a photo of your dish</p>
+                    <Upload className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-600 dark:text-gray-300 mb-2">Upload a photo of your dish</p>
                     <input
                       type="file"
                       accept="image/*"
@@ -338,7 +392,7 @@ const AddRecipe: React.FC = () => {
             {/* Ingredients */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Ingredients *
                 </label>
                 <button
@@ -377,7 +431,7 @@ const AddRecipe: React.FC = () => {
             {/* Steps */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Instructions *
                 </label>
                 <button
@@ -418,12 +472,12 @@ const AddRecipe: React.FC = () => {
 
             {/* Nutritional Info */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
                 Nutritional Information (per serving)
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Calories</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Calories</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.calories}
@@ -433,7 +487,7 @@ const AddRecipe: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Protein (g)</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Protein (g)</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.protein}
@@ -443,7 +497,7 @@ const AddRecipe: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Carbs (g)</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Carbs (g)</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.carbs}
@@ -453,7 +507,7 @@ const AddRecipe: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Fat (g)</label>
+                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Fat (g)</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.fat}
@@ -466,18 +520,18 @@ const AddRecipe: React.FC = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end space-x-4 pt-6">
+            <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6">
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="btn-secondary"
+                className="btn-secondary w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary flex items-center space-x-2 disabled:opacity-50"
+                className="btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 w-full sm:w-auto"
               >
                 {loading && <Loader className="h-4 w-4 animate-spin" />}
                 <span>{loading ? 'Creating...' : 'Create Recipe'}</span>

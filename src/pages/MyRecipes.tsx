@@ -75,7 +75,7 @@ const MyRecipes: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -83,10 +83,10 @@ const MyRecipes: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Sign In</h2>
-          <p className="text-gray-600 mb-4">You need to be logged in to view your recipes.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Please Sign In</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">You need to be logged in to view your recipes.</p>
           <button
             onClick={() => navigate('/auth')}
             className="btn-primary"
@@ -99,12 +99,12 @@ const MyRecipes: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-3">
             <ChefHat className="h-8 w-8 text-primary-500" />
-            <h1 className="text-3xl font-bold text-gray-900">My Recipes</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Recipes</h1>
           </div>
           <Link to="/add-recipe" className="btn-primary flex items-center space-x-2">
             <Plus className="h-4 w-4" />
@@ -114,9 +114,9 @@ const MyRecipes: React.FC = () => {
 
         {recipes.length === 0 ? (
           <div className="text-center py-12">
-            <ChefHat className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No recipes yet</h3>
-            <p className="text-gray-600 mb-4">Share your first recipe with the community!</p>
+            <ChefHat className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No recipes yet</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">Share your first recipe with the community!</p>
             <Link to="/add-recipe" className="btn-primary">
               Add Your First Recipe
             </Link>
@@ -146,29 +146,29 @@ const MyRecipes: React.FC = () => {
                 
                 <div className="p-4">
                   <Link to={`/recipe/${recipe.id}`}>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
                       {recipe.title}
                     </h3>
-                    <p className="text-gray-600 text-sm mb-3 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
                       {recipe.description}
                     </p>
                   </Link>
                   
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       {recipe.cooking_time} min • {recipe.total_ratings} reviews
                     </div>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
-                        className="p-2 text-gray-600 hover:text-primary-500 transition-colors"
+                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-500 transition-colors"
                         title="Edit Recipe"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => deleteRecipe(recipe.id)}
-                        className="p-2 text-gray-600 hover:text-red-500 transition-colors"
+                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-500 transition-colors"
                         title="Delete Recipe"
                       >
                         <Trash2 className="h-4 w-4" />

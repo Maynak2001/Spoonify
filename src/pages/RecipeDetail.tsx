@@ -146,7 +146,7 @@ const RecipeDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -154,10 +154,10 @@ const RecipeDetail: React.FC = () => {
 
   if (!recipe) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Recipe not found</h2>
-          <Link to="/" className="btn-primary">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Recipe not found</h2>
+          <Link to="/recipes" className="btn-primary">
             Back to Recipes
           </Link>
         </div>
@@ -166,16 +166,19 @@ const RecipeDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
-        <Link to="/" className="inline-flex items-center space-x-2 text-gray-600 hover:text-primary-500 mb-6">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="inline-flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 mb-6 transition-colors"
+        >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to Recipes</span>
-        </Link>
+          <span>Back</span>
+        </button>
 
         {/* Recipe Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
           <img
             src={recipe.image_url || 'https://images.unsplash.com/photo-1546548970-71785318a17b?w=800&h=400&fit=crop&crop=center'}
             alt={recipe.title}
@@ -185,18 +188,18 @@ const RecipeDetail: React.FC = () => {
           <div className="p-6">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4 gap-4">
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{recipe.title}</h1>
-                <p className="text-gray-600 text-lg mb-4">{recipe.description}</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{recipe.title}</h1>
+                <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">{recipe.description}</p>
                 
                 <div className="flex flex-wrap items-center gap-4 mb-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(recipe.difficulty)}`}>
                     {recipe.difficulty}
                   </span>
-                  <div className="flex items-center space-x-1 text-gray-600">
+                  <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-300">
                     <Clock className="h-4 w-4" />
                     <span>{recipe.cooking_time} minutes</span>
                   </div>
-                  <div className="flex items-center space-x-1 text-gray-600">
+                  <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-300">
                     <Users className="h-4 w-4" />
                     <span>4 servings</span>
                   </div>
@@ -215,7 +218,7 @@ const RecipeDetail: React.FC = () => {
                   <>
                     <button
                       onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
-                      className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-primary-500 hover:text-white transition-colors"
+                      className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-primary-500 hover:text-white transition-colors"
                       title="Edit Recipe"
                     >
                       <Edit className="h-6 w-6" />
@@ -236,7 +239,7 @@ const RecipeDetail: React.FC = () => {
                           }
                         }
                       }}
-                      className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-red-500 hover:text-white transition-colors"
+                      className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white transition-colors"
                       title="Delete Recipe"
                     >
                       <Trash2 className="h-6 w-6" />
@@ -248,7 +251,7 @@ const RecipeDetail: React.FC = () => {
                   className={`p-3 rounded-full transition-colors ${
                     isFavorite 
                       ? 'bg-red-500 text-white' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-red-500 hover:text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white'
                   }`}
                 >
                   <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} />
@@ -259,7 +262,7 @@ const RecipeDetail: React.FC = () => {
             {/* Rating */}
             {user && (
               <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Rate this recipe:</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rate this recipe:</p>
                 <div className="flex space-x-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -281,13 +284,13 @@ const RecipeDetail: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Ingredients */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Ingredients</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ingredients</h2>
               <ul className="space-y-2">
                 {recipe.ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-start space-x-2">
                     <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></span>
-                    <span className="text-gray-700">{ingredient}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{ingredient}</span>
                   </li>
                 ))}
               </ul>
@@ -295,24 +298,24 @@ const RecipeDetail: React.FC = () => {
 
             {/* Nutritional Info */}
             {recipe.nutritional_info && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Nutrition Facts</h2>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Nutrition Facts</h2>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Calories</span>
-                    <span className="font-medium">{recipe.nutritional_info.calories}</span>
+                    <span className="text-gray-600 dark:text-gray-300">Calories</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.calories}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Protein</span>
-                    <span className="font-medium">{recipe.nutritional_info.protein}g</span>
+                    <span className="text-gray-600 dark:text-gray-300">Protein</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.protein}g</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Carbs</span>
-                    <span className="font-medium">{recipe.nutritional_info.carbs}g</span>
+                    <span className="text-gray-600 dark:text-gray-300">Carbs</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.carbs}g</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Fat</span>
-                    <span className="font-medium">{recipe.nutritional_info.fat}g</span>
+                    <span className="text-gray-600 dark:text-gray-300">Fat</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.fat}g</span>
                   </div>
                 </div>
               </div>
@@ -321,15 +324,15 @@ const RecipeDetail: React.FC = () => {
 
           {/* Instructions */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Instructions</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Instructions</h2>
               <ol className="space-y-4">
                 {recipe.steps.map((step, index) => (
                   <li key={index} className="flex space-x-4">
                     <span className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-medium">
                       {index + 1}
                     </span>
-                    <p className="text-gray-700 pt-1">{step}</p>
+                    <p className="text-gray-700 dark:text-gray-300 pt-1">{step}</p>
                   </li>
                 ))}
               </ol>

@@ -21,23 +21,23 @@ const CommentItem: React.FC<{
   submitReply: (id: string) => void;
   deleteComment: (id: string) => void;
 }> = ({ comment, isReply = false, user, replyingTo, replyTexts, setReplyingTo, setReplyTexts, toggleLike, submitReply, deleteComment }) => (
-  <div className={`${isReply ? 'ml-8 border-l-2 border-gray-100 pl-4' : ''}`}>
+  <div className={`${isReply ? 'ml-8 border-l-2 border-gray-100 dark:border-gray-700 pl-4' : ''}`}>
     <div className="flex items-start space-x-3 mb-3">
-      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-        <span className="text-primary-600 font-medium text-sm">
+      <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center flex-shrink-0">
+        <span className="text-primary-600 dark:text-primary-300 font-medium text-sm">
           {(comment.user_profile?.full_name || comment.user_profile?.email)?.charAt(0) || 'U'}
         </span>
       </div>
       <div className="flex-1">
         <div className="flex items-center space-x-2 mb-1">
-          <span className="font-medium text-gray-900">
+          <span className="font-medium text-gray-900 dark:text-white">
             {comment.user_profile?.full_name || comment.user_profile?.email?.split('@')[0] || 'User'}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
             {new Date(comment.created_at).toLocaleDateString()}
           </span>
         </div>
-        <p className="text-gray-700 mb-2">{comment.content}</p>
+        <p className="text-gray-700 dark:text-gray-300 mb-2">{comment.content}</p>
         
         <div className="flex items-center space-x-4 text-sm">
           <button
@@ -79,7 +79,7 @@ const CommentItem: React.FC<{
                 value={replyTexts[comment.id] || ''}
                 onChange={(e) => setReplyTexts(prev => ({...prev, [comment.id]: e.target.value}))}
                 placeholder="Write a reply..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                 onKeyPress={(e) => e.key === 'Enter' && submitReply(comment.id)}
                 autoFocus
               />
@@ -283,8 +283,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center space-x-2">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
         <MessageCircle className="h-5 w-5" />
         <span>Comments ({comments.length + comments.reduce((acc, c) => acc + (c.replies?.length || 0), 0)})</span>
       </h2>
@@ -295,7 +295,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Share your thoughts about this recipe..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
             rows={3}
           />
           <button
@@ -325,7 +325,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ recipeId }) => {
         ))}
         
         {comments.length === 0 && (
-          <p className="text-gray-500 text-center py-4">
+          <p className="text-gray-500 dark:text-gray-400 text-center py-4">
             No comments yet. Be the first to share your thoughts!
           </p>
         )}

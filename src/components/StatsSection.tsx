@@ -98,14 +98,14 @@ const StatsSection: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="text-center animate-pulse">
-                <div className="h-8 w-8 bg-gray-200 rounded mx-auto mb-2"></div>
-                <div className="h-6 bg-gray-200 rounded mb-1"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded mx-auto mb-2"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-1"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             ))}
           </div>
@@ -115,36 +115,36 @@ const StatsSection: React.FC = () => {
   }
 
   return (
-    <div className="bg-white border-b border-gray-100">
+    <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
             <ChefHat className="h-8 w-8 text-primary-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {formatNumber(stats.totalRecipes)}
             </div>
-            <div className="text-gray-600">Recipes</div>
+            <div className="text-gray-600 dark:text-gray-300">Recipes</div>
           </div>
           <div className="text-center">
             <Users className="h-8 w-8 text-primary-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {formatNumber(stats.totalUsers)}
             </div>
-            <div className="text-gray-600">Chefs</div>
+            <div className="text-gray-600 dark:text-gray-300">Chefs</div>
           </div>
           <div className="text-center">
             <TrendingUp className="h-8 w-8 text-primary-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {formatNumber(stats.totalCategories)}
             </div>
-            <div className="text-gray-600">Categories</div>
+            <div className="text-gray-600 dark:text-gray-300">Categories</div>
           </div>
           <div className="text-center">
             <Clock className="h-8 w-8 text-primary-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {stats.avgCookingTime}min
             </div>
-            <div className="text-gray-600">Avg Time</div>
+            <div className="text-gray-600 dark:text-gray-300">Avg Time</div>
           </div>
         </div>
       </div>

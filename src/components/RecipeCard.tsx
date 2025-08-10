@@ -52,8 +52,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isFavorite, onFavoriteT
   };
 
   return (
-    <div className="card group hover:shadow-lg transition-all duration-300">
-      <Link to={`/recipe/${recipe.id}`}>
+    <div className="card group hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 border dark:border-gray-700">
+      <Link to={`/recipe/${recipe.id}`} onClick={() => window.scrollTo(0, 0)}>
         <div className="relative">
           <img
             src={recipe.image_url || 'https://images.unsplash.com/photo-1546548970-71785318a17b?w=400&h=250&fit=crop&crop=center'}
@@ -80,14 +80,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isFavorite, onFavoriteT
         </div>
         
         <div className="p-4">
-          <h3 className="font-semibold text-lg text-gray-900 mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
             {recipe.title}
           </h3>
-          <p className="text-gray-600 text-sm mb-3 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
             {recipe.description}
           </p>
           
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <Clock className="h-4 w-4" />
@@ -103,7 +103,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isFavorite, onFavoriteT
               <div className="flex items-center space-x-1">
                 <Star className="h-4 w-4 fill-current text-yellow-400" />
                 <span>{recipe.average_rating.toFixed(1)}</span>
-                <span className="text-gray-400">({recipe.total_ratings})</span>
+                <span className="text-gray-400 dark:text-gray-500">({recipe.total_ratings})</span>
               </div>
             )}
           </div>
