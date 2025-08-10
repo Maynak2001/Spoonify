@@ -40,7 +40,7 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-primary-500 hover:bg-primary-600 text-white dark:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
   }
   
   .btn-secondary {
@@ -72,15 +72,16 @@
   color: #d1d5db !important;
 }
 
-.dark button {
+/* Only target auth page buttons, not navbar buttons */
+.dark .bg-white.dark\:bg-gray-800 button {
   background-color: #f2750a !important;
   color: white !important;
 }
 
-.dark button:hover {
+.dark .bg-white.dark\:bg-gray-800 button:hover {
   background-color: #e35d05 !important;
 }
 
-.dark a {
+.dark .bg-white.dark\:bg-gray-800 a {
   color: #f2750a !important;
 }

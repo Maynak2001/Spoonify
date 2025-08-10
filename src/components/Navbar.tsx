@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ChefHat, User, LogOut, Plus, Heart, Menu, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -11,18 +11,6 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -39,7 +27,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/spoonify.png" alt="Spoonify" className="h-8 w-8 sm:h-10 sm:w-10" />
+            <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary-500" />
             <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">Spoonify</span>
           </Link>
 
@@ -114,11 +102,12 @@ const Navbar: React.FC = () => {
               <>
                 <Link
                   to="/add-recipe"
-                  className="btn-primary flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2"
+                  className="bg-primary-500 hover:bg-primary-600 font-medium py-1 sm:py-2 px-2 sm:px-4 rounded-lg transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm"
+                  style={{ color: 'white' }}
                 >
-                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">Add Recipe</span>
-                  <span className="sm:hidden">Add</span>
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: 'white' }} />
+                  <span className="hidden sm:inline" style={{ color: 'white' }}>Add Recipe</span>
+                  <span className="sm:hidden" style={{ color: 'white' }}>Add</span>
                 </Link>
                 <Link
                   to="/favorites"
@@ -126,7 +115,7 @@ const Navbar: React.FC = () => {
                 >
                   <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
                 </Link>
-                <div className="relative" ref={userMenuRef}>
+                <div className="relative">
                   <button 
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-primary-500 transition-colors p-1"
@@ -168,9 +157,9 @@ const Navbar: React.FC = () => {
             ) : (
               <Link
                 to="/auth"
-                className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-2"
+                className="bg-primary-500 hover:bg-primary-600 font-medium py-1 sm:py-2 px-3 sm:px-4 rounded-lg transition-colors duration-200 text-xs sm:text-sm"
               >
-                Sign In
+                <span className="text-white">Sign In</span>
               </Link>
             )}
           </div>
