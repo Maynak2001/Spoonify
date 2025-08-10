@@ -1,0 +1,331 @@
+[
+  {
+    "title": "Classic Spaghetti Carbonara",
+    "description": "A traditional Italian pasta dish with eggs, cheese, and pancetta",
+    "ingredients": [
+      "400g spaghetti",
+      "200g pancetta or guanciale, diced",
+      "4 large eggs",
+      "100g Pecorino Romano cheese, grated",
+      "50g Parmesan cheese, grated",
+      "Black pepper to taste",
+      "Salt for pasta water"
+    ],
+    "steps": [
+      "Bring a large pot of salted water to boil and cook spaghetti according to package directions",
+      "While pasta cooks, fry pancetta in a large skillet until crispy",
+      "In a bowl, whisk together eggs, both cheeses, and plenty of black pepper",
+      "Reserve 1 cup pasta water before draining",
+      "Add hot pasta to the skillet with pancetta",
+      "Remove from heat and quickly stir in egg mixture, adding pasta water as needed",
+      "Serve immediately with extra cheese and pepper"
+    ],
+    "cooking_time": 20,
+    "difficulty": "Medium",
+    "nutritional_info": {
+      "calories": 520,
+      "protein": 28,
+      "carbs": 45,
+      "fat": 24
+    }
+  },
+  {
+    "title": "Chocolate Chip Cookies",
+    "description": "Soft and chewy homemade chocolate chip cookies",
+    "ingredients": [
+      "2¼ cups all-purpose flour",
+      "1 tsp baking soda",
+      "1 tsp salt",
+      "1 cup butter, softened",
+      "¾ cup granulated sugar",
+      "¾ cup brown sugar",
+      "2 large eggs",
+      "2 tsp vanilla extract",
+      "2 cups chocolate chips"
+    ],
+    "steps": [
+      "Preheat oven to 375°F (190°C)",
+      "Mix flour, baking soda, and salt in a bowl",
+      "Cream butter and both sugars until fluffy",
+      "Beat in eggs and vanilla",
+      "Gradually mix in flour mixture",
+      "Stir in chocolate chips",
+      "Drop rounded tablespoons onto ungreased baking sheets",
+      "Bake 9-11 minutes until golden brown",
+      "Cool on baking sheet for 2 minutes before transferring"
+    ],
+    "cooking_time": 25,
+    "difficulty": "Easy",
+    "nutritional_info": {
+      "calories": 180,
+      "protein": 2,
+      "carbs": 24,
+      "fat": 9
+    }
+  },
+  {
+    "title": "Grilled Salmon with Lemon Herbs",
+    "description": "Perfectly grilled salmon with fresh herbs and lemon",
+    "ingredients": [
+      "4 salmon fillets (6 oz each)",
+      "2 lemons, sliced",
+      "3 tbsp olive oil",
+      "2 tbsp fresh dill, chopped",
+      "2 tbsp fresh parsley, chopped",
+      "2 cloves garlic, minced",
+      "Salt and pepper to taste"
+    ],
+    "steps": [
+      "Preheat grill to medium-high heat",
+      "Mix olive oil, herbs, and garlic in a bowl",
+      "Season salmon with salt and pepper",
+      "Brush salmon with herb mixture",
+      "Grill salmon 4-5 minutes per side",
+      "Top with lemon slices during last 2 minutes",
+      "Serve immediately with remaining herb oil"
+    ],
+    "cooking_time": 15,
+    "difficulty": "Easy",
+    "nutritional_info": {
+      "calories": 350,
+      "protein": 35,
+      "carbs": 2,
+      "fat": 22
+    }
+  },
+  {
+    "title": "Vegetarian Buddha Bowl",
+    "description": "Nutritious bowl with quinoa, roasted vegetables, and tahini dressing",
+    "ingredients": [
+      "1 cup quinoa",
+      "2 cups sweet potato, cubed",
+      "1 cup broccoli florets",
+      "1 cup chickpeas, drained",
+      "2 cups spinach",
+      "¼ cup tahini",
+      "2 tbsp lemon juice",
+      "1 tbsp maple syrup",
+      "2 tbsp olive oil",
+      "Salt and pepper to taste"
+    ],
+    "steps": [
+      "Preheat oven to 400°F (200°C)",
+      "Cook quinoa according to package directions",
+      "Toss sweet potato and broccoli with olive oil, salt, and pepper",
+      "Roast vegetables for 25-30 minutes",
+      "Roast chickpeas for last 15 minutes",
+      "Whisk together tahini, lemon juice, and maple syrup for dressing",
+      "Assemble bowls with quinoa, vegetables, and spinach",
+      "Drizzle with tahini dressing"
+    ],
+    "cooking_time": 45,
+    "difficulty": "Easy",
+    "nutritional_info": {
+      "calories": 420,
+      "protein": 15,
+      "carbs": 58,
+      "fat": 16
+    }
+  },
+  {
+    "title": "Beef Tacos with Homemade Salsa",
+    "description": "Flavorful ground beef tacos with fresh salsa and toppings",
+    "ingredients": [
+      "1 lb ground beef",
+      "8 taco shells",
+      "1 onion, diced",
+      "2 cloves garlic, minced",
+      "1 tbsp chili powder",
+      "1 tsp cumin",
+      "4 tomatoes, diced",
+      "½ red onion, finely diced",
+      "1 jalapeño, minced",
+      "¼ cup cilantro, chopped",
+      "2 limes, juiced",
+      "Lettuce, cheese, sour cream for serving"
+    ],
+    "steps": [
+      "Make salsa by combining tomatoes, red onion, jalapeño, cilantro, and lime juice",
+      "Cook ground beef with onion and garlic until browned",
+      "Add chili powder, cumin, salt, and pepper",
+      "Simmer for 10 minutes",
+      "Warm taco shells according to package directions",
+      "Fill shells with beef mixture",
+      "Top with lettuce, cheese, sour cream, and salsa"
+    ],
+    "cooking_time": 30,
+    "difficulty": "Easy",
+    "nutritional_info": {
+      "calories": 320,
+      "protein": 22,
+      "carbs": 18,
+      "fat": 18
+    }
+  },
+  {
+    "title": "Chicken Tikka Masala",
+    "description": "Creamy and aromatic Indian curry with tender chicken",
+    "ingredients": [
+      "2 lbs chicken breast, cubed",
+      "1 cup plain yogurt",
+      "2 tbsp garam masala",
+      "1 onion, diced",
+      "4 cloves garlic, minced",
+      "1 tbsp ginger, minced",
+      "1 can crushed tomatoes",
+      "1 cup heavy cream",
+      "2 tbsp tomato paste",
+      "2 tbsp vegetable oil",
+      "Salt and cilantro for garnish"
+    ],
+    "steps": [
+      "Marinate chicken in yogurt and 1 tbsp garam masala for 30 minutes",
+      "Heat oil in a large pan and cook chicken until browned",
+      "Remove chicken and sauté onion, garlic, and ginger",
+      "Add tomato paste and remaining garam masala",
+      "Add crushed tomatoes and simmer 10 minutes",
+      "Stir in cream and return chicken to pan",
+      "Simmer 15 minutes until chicken is cooked through",
+      "Garnish with cilantro and serve with rice"
+    ],
+    "cooking_time": 60,
+    "difficulty": "Medium",
+    "nutritional_info": {
+      "calories": 380,
+      "protein": 32,
+      "carbs": 12,
+      "fat": 22
+    }
+  },
+  {
+    "title": "Greek Salad",
+    "description": "Fresh Mediterranean salad with feta cheese and olives",
+    "ingredients": [
+      "4 large tomatoes, chopped",
+      "1 cucumber, sliced",
+      "1 red onion, thinly sliced",
+      "1 green bell pepper, chopped",
+      "½ cup Kalamata olives",
+      "200g feta cheese, cubed",
+      "¼ cup olive oil",
+      "2 tbsp red wine vinegar",
+      "1 tsp dried oregano",
+      "Salt and pepper to taste"
+    ],
+    "steps": [
+      "Combine tomatoes, cucumber, onion, and bell pepper in a large bowl",
+      "Add olives and feta cheese",
+      "Whisk together olive oil, vinegar, oregano, salt, and pepper",
+      "Pour dressing over salad and toss gently",
+      "Let stand 10 minutes before serving",
+      "Serve at room temperature"
+    ],
+    "cooking_time": 15,
+    "difficulty": "Easy",
+    "nutritional_info": {
+      "calories": 220,
+      "protein": 8,
+      "carbs": 12,
+      "fat": 18
+    }
+  },
+  {
+    "title": "Banana Bread",
+    "description": "Moist and delicious homemade banana bread",
+    "ingredients": [
+      "3 ripe bananas, mashed",
+      "⅓ cup melted butter",
+      "¾ cup sugar",
+      "1 egg, beaten",
+      "1 tsp vanilla extract",
+      "1 tsp baking soda",
+      "Pinch of salt",
+      "1½ cups all-purpose flour",
+      "½ cup chopped walnuts (optional)"
+    ],
+    "steps": [
+      "Preheat oven to 350°F (175°C)",
+      "Grease a 9x5 inch loaf pan",
+      "Mix mashed bananas and melted butter in a large bowl",
+      "Stir in sugar, egg, and vanilla",
+      "Add baking soda and salt",
+      "Mix in flour until just combined",
+      "Fold in walnuts if using",
+      "Pour into prepared pan and bake 60-65 minutes",
+      "Cool in pan 10 minutes before removing"
+    ],
+    "cooking_time": 75,
+    "difficulty": "Easy",
+    "nutritional_info": {
+      "calories": 195,
+      "protein": 3,
+      "carbs": 35,
+      "fat": 6
+    }
+  },
+  {
+    "title": "Mushroom Risotto",
+    "description": "Creamy Italian rice dish with mixed mushrooms",
+    "ingredients": [
+      "1½ cups Arborio rice",
+      "4 cups warm chicken or vegetable broth",
+      "1 lb mixed mushrooms, sliced",
+      "1 onion, finely diced",
+      "3 cloves garlic, minced",
+      "½ cup white wine",
+      "½ cup Parmesan cheese, grated",
+      "3 tbsp butter",
+      "2 tbsp olive oil",
+      "Fresh thyme and parsley"
+    ],
+    "steps": [
+      "Sauté mushrooms in olive oil until golden, set aside",
+      "In same pan, cook onion and garlic until soft",
+      "Add rice and stir for 2 minutes",
+      "Add wine and stir until absorbed",
+      "Add warm broth one ladle at a time, stirring constantly",
+      "Continue until rice is creamy and tender, about 20 minutes",
+      "Stir in mushrooms, butter, and Parmesan",
+      "Garnish with fresh herbs"
+    ],
+    "cooking_time": 35,
+    "difficulty": "Hard",
+    "nutritional_info": {
+      "calories": 340,
+      "protein": 12,
+      "carbs": 52,
+      "fat": 10
+    }
+  },
+  {
+    "title": "Avocado Toast",
+    "description": "Simple and healthy breakfast with perfectly ripe avocado",
+    "ingredients": [
+      "2 slices whole grain bread",
+      "1 ripe avocado",
+      "1 tbsp lemon juice",
+      "2 tbsp olive oil",
+      "Salt and pepper to taste",
+      "Red pepper flakes",
+      "Everything bagel seasoning",
+      "Cherry tomatoes, halved (optional)"
+    ],
+    "steps": [
+      "Toast bread slices until golden brown",
+      "Mash avocado with lemon juice, salt, and pepper",
+      "Spread avocado mixture on toast",
+      "Drizzle with olive oil",
+      "Sprinkle with red pepper flakes and everything seasoning",
+      "Top with cherry tomatoes if desired",
+      "Serve immediately"
+    ],
+    "cooking_time": 5,
+    "difficulty": "Easy",
+    "nutritional_info": {
+      "calories": 280,
+      "protein": 8,
+      "carbs": 24,
+      "fat": 18
+    }
+  }
+]
