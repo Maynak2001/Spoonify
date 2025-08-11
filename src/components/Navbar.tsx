@@ -150,7 +150,10 @@ const Navbar: React.FC = () => {
                       <div className="py-2">
                         <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
                           <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+                            {user?.user_metadata?.full_name || 
+                             user?.user_metadata?.name || 
+                             user?.email?.split('@')[0] || 
+                             'User'}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                             {user?.email}

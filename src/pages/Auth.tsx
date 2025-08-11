@@ -54,7 +54,9 @@ const AuthPage: React.FC = () => {
               },
             }}
             providers={['google']}
-            redirectTo={`${window.location.origin}/`}
+            redirectTo={process.env.NODE_ENV === 'production' 
+              ? (process.env.REACT_APP_PRODUCTION_URL || 'https://spoonify.vercel.app') + '/'
+              : `${window.location.origin}/`}
             onlyThirdPartyProviders={false}
           />
         </div>
