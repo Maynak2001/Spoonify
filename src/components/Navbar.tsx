@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ChefHat, User, LogOut, Plus, Heart, Menu, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -11,6 +11,29 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setUserMenuOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -27,7 +50,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary-500" />
+            <img src="/spoonify.png" alt="Spoonify" className="h-8 w-8 sm:h-10 sm:w-10" />
             <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">Spoonify</span>
           </Link>
 
@@ -115,7 +138,7 @@ const Navbar: React.FC = () => {
                 >
                   <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
                 </Link>
-                <div className="relative">
+                <div className="relative" ref={userMenuRef}>
                   <button 
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-primary-500 transition-colors p-1"
@@ -125,6 +148,14 @@ const Navbar: React.FC = () => {
                   {userMenuOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-100 dark:border-gray-700 z-50">
                       <div className="py-2">
+                        <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {user?.email}
+                          </p>
+                        </div>
                         <Link
                           to="/profile"
                           onClick={() => setUserMenuOpen(false)}

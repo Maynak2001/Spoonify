@@ -62,14 +62,8 @@ const RecipeDetail: React.FC = () => {
 
 
   const checkFavoriteStatus = async () => {
-    const { data } = await supabase
-      .from('favorites')
-      .select('id')
-      .eq('recipe_id', id)
-      .eq('user_id', user?.id)
-      .single();
-
-    setIsFavorite(!!data);
+    // Temporarily disabled
+    setIsFavorite(false);
   };
 
   const fetchUserRating = async () => {
@@ -86,27 +80,8 @@ const RecipeDetail: React.FC = () => {
   const toggleFavorite = async () => {
     if (!user) {
       toast.error('Please sign in to save favorites');
-      return;
-    }
-
-    try {
-      if (isFavorite) {
-        await supabase
-          .from('favorites')
-          .delete()
-          .eq('recipe_id', id)
-          .eq('user_id', user.id);
-        setIsFavorite(false);
-        toast.success('Removed from favorites');
-      } else {
-        await supabase
-          .from('favorites')
-          .insert({ recipe_id: id, user_id: user.id });
-        setIsFavorite(true);
-        toast.success('Added to favorites');
-      }
-    } catch (error) {
-      toast.error('Error updating favorites');
+    } else {
+      toast.error('Favorites feature temporarily disabled');
     }
   };
 

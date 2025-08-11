@@ -16,6 +16,7 @@ import Contact from './pages/Contact';
 import AboutMe from './pages/AboutMe';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import Help from './pages/Help';
 import Favorites from './pages/Favorites';
 import MyRecipes from './pages/MyRecipes';
 import Profile from './pages/Profile';
@@ -61,6 +62,7 @@ function App() {
           <Route path="/about-me" element={<AboutMe />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/help" element={<Help />} />
           <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
           <Route path="/my-recipes" element={<ProtectedRoute><MyRecipes /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

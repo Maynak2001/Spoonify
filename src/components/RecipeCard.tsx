@@ -24,20 +24,24 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isFavorite, onFavoriteT
 
     try {
       if (isFavorite) {
-        await supabase
+        const { error } = await supabase
           .from('favorites')
           .delete()
-          .eq('recipe_id', recipe.id)
-          .eq('user_id', user.id);
+          .match({ recipe_id: recipe.id, user_id: user.id });
+        
+        if (error) throw error;
         toast.success('Removed from favorites');
       } else {
-        await supabase
+        const { error } = await supabase
           .from('favorites')
           .insert({ recipe_id: recipe.id, user_id: user.id });
+        
+        if (error) throw error;
         toast.success('Added to favorites');
       }
       onFavoriteToggle?.();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Favorites error:', error);
       toast.error('Error updating favorites');
     }
   };
@@ -62,14 +66,17 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isFavorite, onFavoriteT
           />
           <div className="absolute top-3 right-3">
             <button
-              onClick={toggleFavorite}
-              className={`p-2 rounded-full backdrop-blur-sm transition-colors ${
-                isFavorite 
-                  ? 'bg-red-500 text-white' 
-                  : 'bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white'
-              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                if (!user) {
+                  toast.error('Please sign in to save favorites');
+                } else {
+                  toast.error('Favorites feature temporarily disabled');
+                }
+              }}
+              className="p-2 rounded-full backdrop-blur-sm bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white transition-colors"
             >
-              <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+              <Heart className="h-4 w-4" />
             </button>
           </div>
           <div className="absolute bottom-3 left-3">

@@ -141,9 +141,9 @@ const Chefs: React.FC = () => {
 
                 <Link
                   to={`/chef/${chef.id}`}
-                  className="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium"
+                  className="w-full bg-primary-500 hover:bg-primary-600 py-2 px-4 rounded-lg transition-colors text-sm font-medium"
                 >
-                  View Profile
+                  <span className="text-white">View Profile</span>
                 </Link>
               </div>
             </div>

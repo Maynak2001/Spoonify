@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Support</h3>
             <ul className="space-y-2">
-              <li><Link to="/contact" onClick={scrollToTop} className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors text-sm sm:text-base">Help Center</Link></li>
+              <li><Link to="/help" onClick={scrollToTop} className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors text-sm sm:text-base">Help Center</Link></li>
               <li><Link to="/contact" onClick={scrollToTop} className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors text-sm sm:text-base">Contact Us</Link></li>
               <li><Link to="/about-me" onClick={scrollToTop} className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors text-sm sm:text-base">About Developer</Link></li>
               <li><Link to="/privacy" onClick={scrollToTop} className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors text-sm sm:text-base">Privacy Policy</Link></li>

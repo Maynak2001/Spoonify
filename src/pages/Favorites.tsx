@@ -91,16 +91,15 @@ const Favorites: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Favorites</h1>
         </div>
 
-        {favorites.length === 0 ? (
-          <div className="text-center py-12">
-            <Heart className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">Start exploring recipes and save your favorites!</p>
-            <Link to="/" className="btn-primary">
-              Browse Recipes
-            </Link>
-          </div>
-        ) : (
+        <div className="text-center py-12">
+          <Heart className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Favorites Coming Soon!</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">We're working on bringing back the favorites feature. Stay tuned!</p>
+          <Link to="/recipes" className="btn-primary">
+            Browse Recipes
+          </Link>
+        </div>
+        {false && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {favorites.map((recipe) => (
               <RecipeCard 

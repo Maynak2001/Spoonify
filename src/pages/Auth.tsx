@@ -54,7 +54,7 @@ const AuthPage: React.FC = () => {
               },
             }}
             providers={['google']}
-            redirectTo={`${window.location.origin}/recipes`}
+            redirectTo={`${window.location.origin}/`}
             onlyThirdPartyProviders={false}
           />
         </div>
