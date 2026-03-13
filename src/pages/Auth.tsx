@@ -20,8 +20,16 @@ const AuthPage: React.FC = () => {
     }
   }, [user, navigate]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
+    const wakeUpToast = setTimeout(() => {
+      toast.loading('Server is waking up, please wait...', { id: 'wakeup' });
+    }, 3000);
+
     try {
       if (isLogin) {
         await login(formData.email, formData.password);
@@ -33,6 +41,10 @@ const AuthPage: React.FC = () => {
       navigate('/recipes');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Authentication failed');
+    } finally {
+      clearTimeout(wakeUpToast);
+      toast.dismiss('wakeup');
+      setIsLoading(false);
     }
   };
 
@@ -98,9 +110,10 @@ const AuthPage: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              disabled={isLoading}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isLogin ? 'Sign In' : 'Sign Up'}
+              {isLoading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up')}
             </button>
           </form>
           
