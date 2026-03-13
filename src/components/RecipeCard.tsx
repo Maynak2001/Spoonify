@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Clock, Users, Star, Heart } from 'lucide-react';
 import { Recipe } from '../types';
 import { useAuth } from '../hooks/useAuth';
-import { supabase } from '../utils/supabase';
+import { addFavorite, removeFavorite } from '../utils/api';
 import toast from 'react-hot-toast';
 
 interface RecipeCardProps {
@@ -21,28 +21,22 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isFavorite, onFavoriteT
       toast.error('Please sign in to save favorites');
       return;
     }
-
     try {
       if (isFavorite) {
-        const { error } = await supabase
-          .from('favorites')
-          .delete()
-          .match({ recipe_id: recipe.id, user_id: user.id });
-        
-        if (error) throw error;
+        await removeFavorite(recipe.id);
         toast.success('Removed from favorites');
       } else {
-        const { error } = await supabase
-          .from('favorites')
-          .insert({ recipe_id: recipe.id, user_id: user.id });
-        
-        if (error) throw error;
+        await addFavorite(recipe.id);
         toast.success('Added to favorites');
       }
       onFavoriteToggle?.();
     } catch (error: any) {
-      console.error('Favorites error:', error);
-      toast.error('Error updating favorites');
+      const msg = error.response?.data?.message;
+      if (msg === 'Already in favorites') {
+        toast.error('Already in favorites');
+      } else {
+        toast.error('Error updating favorites');
+      }
     }
   };
 
@@ -66,17 +60,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isFavorite, onFavoriteT
           />
           <div className="absolute top-3 right-3">
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                if (!user) {
-                  toast.error('Please sign in to save favorites');
-                } else {
-                  toast.error('Favorites feature temporarily disabled');
-                }
-              }}
-              className="p-2 rounded-full backdrop-blur-sm bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white transition-colors"
+              onClick={toggleFavorite}
+              className={`p-2 rounded-full backdrop-blur-sm transition-colors ${
+                isFavorite
+                  ? 'bg-red-500 text-white'
+                  : 'bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white'
+              }`}
             >
-              <Heart className="h-4 w-4" />
+              <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
           </div>
           <div className="absolute bottom-3 left-3">

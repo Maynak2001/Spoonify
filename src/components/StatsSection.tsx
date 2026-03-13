@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChefHat, Users, TrendingUp, Clock } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { getRecipes, getCategories } from '../utils/api';
 
 interface Stats {
   totalRecipes: number;
@@ -20,66 +20,26 @@ const StatsSection: React.FC = () => {
 
   useEffect(() => {
     fetchStats();
-    
-    // Set up real-time subscriptions
-    const recipesSubscription = supabase
-      .channel('recipes-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => {
-        fetchStats();
-      })
-      .subscribe();
-
-    const usersSubscription = supabase
-      .channel('users-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, () => {
-        fetchStats();
-      })
-      .subscribe();
-
-    const categoriesSubscription = supabase
-      .channel('categories-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
-        fetchStats();
-      })
-      .subscribe();
-
-    return () => {
-      recipesSubscription.unsubscribe();
-      usersSubscription.unsubscribe();
-      categoriesSubscription.unsubscribe();
-    };
   }, []);
 
   const fetchStats = async () => {
     try {
-      // Get total recipes
-      const { count: recipeCount } = await supabase
-        .from('recipes')
-        .select('*', { count: 'exact', head: true });
+      const [recipesRes, categoriesRes] = await Promise.all([
+        getRecipes(),
+        getCategories()
+      ]);
 
-      // Get total users
-      const { count: userCount } = await supabase
-        .from('user_profiles')
-        .select('*', { count: 'exact', head: true });
+      const recipes = recipesRes.data || [];
+      const categories = categoriesRes.data || [];
 
-      // Get total categories
-      const { count: categoryCount } = await supabase
-        .from('categories')
-        .select('*', { count: 'exact', head: true });
-
-      // Get average cooking time
-      const { data: cookingTimes } = await supabase
-        .from('recipes')
-        .select('cooking_time');
-
-      const avgTime = cookingTimes && cookingTimes.length > 0
-        ? Math.round(cookingTimes.reduce((sum, recipe) => sum + recipe.cooking_time, 0) / cookingTimes.length)
+      const avgTime = recipes.length > 0
+        ? Math.round(recipes.reduce((sum: number, r: any) => sum + (r.cookingTime || 0), 0) / recipes.length)
         : 0;
 
       setStats({
-        totalRecipes: recipeCount || 0,
-        totalUsers: userCount || 0,
-        totalCategories: categoryCount || 0,
+        totalRecipes: recipes.length,
+        totalUsers: 0,
+        totalCategories: categories.length,
         avgCookingTime: avgTime
       });
     } catch (error) {

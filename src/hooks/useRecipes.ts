@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabase';
+import { getRecipes, normalizeRecipe } from '../utils/api';
 import { Recipe } from '../types';
 
 export const useRecipes = (filters?: {
@@ -7,6 +7,7 @@ export const useRecipes = (filters?: {
   difficulty?: string;
   maxCookingTime?: number;
   search?: string;
+  userId?: string;
 }) => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,55 +15,25 @@ export const useRecipes = (filters?: {
 
   useEffect(() => {
     fetchRecipes();
-  }, [filters]);
+  }, [JSON.stringify(filters)]);
 
   const fetchRecipes = async () => {
     try {
       setLoading(true);
-      let query = supabase
-        .from('recipes')
-        .select(`
-          *,
-          categories(name),
-          ratings(rating),
-          user_profiles(full_name)
-        `);
+      const params: any = {};
+      if (filters?.category) params.category = filters.category;
+      if (filters?.difficulty) params.difficulty = filters.difficulty;
+      if (filters?.search) params.search = filters.search;
+      if (filters?.userId) params.userId = filters.userId;
 
-      if (filters?.category && filters.category.trim() !== '') {
-        query = query.eq('category', filters.category);
+      const { data } = await getRecipes(params);
+      let allRecipes = (data.recipes || []).map(normalizeRecipe);
+
+      if (filters?.maxCookingTime && filters.maxCookingTime < 120) {
+        allRecipes = allRecipes.filter((r: any) => r.cooking_time <= filters.maxCookingTime!);
       }
 
-      if (filters?.difficulty && filters.difficulty.trim() !== '') {
-        query = query.eq('difficulty', filters.difficulty);
-      }
-
-      if (filters?.maxCookingTime) {
-        query = query.lte('cooking_time', filters.maxCookingTime);
-      }
-
-      if (filters?.search && filters.search.trim() !== '') {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Calculate average ratings
-      const recipesWithRatings = data?.map(recipe => {
-        const ratings = recipe.ratings || [];
-        const avgRating = ratings.length > 0 
-          ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length 
-          : 0;
-        
-        return {
-          ...recipe,
-          average_rating: avgRating,
-          total_ratings: ratings.length
-        };
-      }) || [];
-
-      setRecipes(recipesWithRatings);
+      setRecipes(allRecipes as Recipe[]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

@@ -5,7 +5,7 @@ import RecipeCard from '../components/RecipeCard';
 import SearchFilters from '../components/SearchFilters';
 import StatsSection from '../components/StatsSection';
 import { useRecipes } from '../hooks/useRecipes';
-import { supabase } from '../utils/supabase';
+import { getCategories } from '../utils/api';
 
 const Home: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -31,8 +31,12 @@ const Home: React.FC = () => {
   }, []);
 
   const fetchCategories = async () => {
-    const { data } = await supabase.from('categories').select('*').order('name');
-    setCategories(data || []);
+    try {
+      const { data } = await getCategories();
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
   };
 
   const { recipes, loading, error } = useRecipes(filters);
@@ -95,13 +99,12 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
             {(showAllCategories ? categories : categories.slice(0, 4)).map((category) => (
               <button
-                key={category.id}
+                key={category._id}
                 onClick={() => {
-                  console.log('Category clicked:', category.id);
-                  setFilters(prev => ({ ...prev, category: category.id }));
+                  setFilters(prev => ({ ...prev, category: category._id }));
                 }}
                 className={`p-2 sm:p-3 rounded-lg border-2 transition-all duration-200 text-center ${
-                  filters.category === category.id
+                  filters.category === category._id
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
                     : 'border-gray-200 dark:border-gray-600 hover:border-primary-300 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800'
                 }`}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChefHat } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { getCategories, getRecipes } from '../utils/api';
 
 interface Category {
   id: string;
@@ -20,28 +20,23 @@ const Categories: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      // First get categories
-      const { data: categoriesData, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
+      const [catsRes, recipesRes] = await Promise.all([
+        getCategories(),
+        getRecipes()
+      ]);
 
-      if (error) throw error;
+      const cats = catsRes.data || [];
+      const recipes = recipesRes.data?.recipes || [];
 
-      // Then get recipe counts for each category
-      const categoriesWithCount = await Promise.all(
-        (categoriesData || []).map(async (cat) => {
-          const { count } = await supabase
-            .from('recipes')
-            .select('*', { count: 'exact', head: true })
-            .eq('category', cat.id);
-          
-          return {
-            ...cat,
-            recipe_count: count || 0
-          };
-        })
-      );
+      const categoriesWithCount = cats.map((cat: any) => ({
+        id: cat._id,
+        name: cat.name,
+        description: cat.description || '',
+        recipe_count: recipes.filter((r: any) => {
+          const catId = r.categoryId?._id || r.categoryId;
+          return catId === cat._id;
+        }).length
+      }));
 
       setCategories(categoriesWithCount);
     } catch (error) {
@@ -79,14 +74,21 @@ const Categories: React.FC = () => {
                   <ChefHat className="h-8 w-8 text-primary-500" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{category.name}</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">{category.description}</p>
-                <span className="text-primary-500 font-medium">
-                  {category.recipe_count} recipes
-                </span>
+                {category.description && (
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">{category.description}</p>
+                )}
+                <span className="text-primary-500 font-medium">{category.recipe_count} recipes</span>
               </div>
             </Link>
           ))}
         </div>
+
+        {categories.length === 0 && (
+          <div className="text-center py-12">
+            <ChefHat className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No categories found</h3>
+          </div>
+        )}
       </div>
     </div>
   );

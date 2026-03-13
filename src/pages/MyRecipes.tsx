@@ -1,53 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, ChefHat, Edit, Trash2 } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { getRecipes, deleteRecipe, normalizeRecipe } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
-import { Recipe } from '../types';
 import toast from 'react-hot-toast';
 
 const MyRecipes: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      fetchMyRecipes();
-    }
+    if (user) fetchMyRecipes();
   }, [user]);
 
   const fetchMyRecipes = async () => {
     if (!user) return;
-
     try {
-      const { data, error } = await supabase
-        .from('recipes')
-        .select(`
-          *,
-          categories(name),
-          ratings(rating)
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      const recipesWithRatings = data?.map(recipe => {
-        const ratings = recipe.ratings || [];
-        const avgRating = ratings.length > 0 
-          ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length 
-          : 0;
-        
-        return {
-          ...recipe,
-          average_rating: avgRating,
-          total_ratings: ratings.length
-        };
-      }) || [];
-
-      setRecipes(recipesWithRatings);
+      const { data } = await getRecipes({ userId: user.id });
+      setRecipes((data.recipes || []).map(normalizeRecipe));
     } catch (error) {
       console.error('Error fetching recipes:', error);
     } finally {
@@ -55,18 +27,11 @@ const MyRecipes: React.FC = () => {
     }
   };
 
-  const deleteRecipe = async (recipeId: string) => {
+  const handleDelete = async (recipeId: string) => {
     if (!window.confirm('Are you sure you want to delete this recipe?')) return;
-
     try {
-      const { error } = await supabase
-        .from('recipes')
-        .delete()
-        .eq('id', recipeId);
-
-      if (error) throw error;
-
-      setRecipes(recipes.filter(recipe => recipe.id !== recipeId));
+      await deleteRecipe(recipeId);
+      setRecipes(recipes.filter(r => r.id !== recipeId));
       toast.success('Recipe deleted successfully');
     } catch (error) {
       toast.error('Error deleting recipe');
@@ -86,13 +51,7 @@ const MyRecipes: React.FC = () => {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Please Sign In</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">You need to be logged in to view your recipes.</p>
-          <button
-            onClick={() => navigate('/auth')}
-            className="btn-primary"
-          >
-            Sign In
-          </button>
+          <button onClick={() => navigate('/auth')} className="btn-primary">Sign In</button>
         </div>
       </div>
     );
@@ -117,9 +76,7 @@ const MyRecipes: React.FC = () => {
             <ChefHat className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No recipes yet</h3>
             <p className="text-gray-600 dark:text-gray-300 mb-4">Share your first recipe with the community!</p>
-            <Link to="/add-recipe" className="btn-primary">
-              Add Your First Recipe
-            </Link>
+            <Link to="/add-recipe" className="btn-primary">Add Your First Recipe</Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -137,13 +94,11 @@ const MyRecipes: React.FC = () => {
                         recipe.difficulty === 'Easy' ? 'text-green-600 bg-green-50' :
                         recipe.difficulty === 'Medium' ? 'text-yellow-600 bg-yellow-50' :
                         'text-red-600 bg-red-50'
-                      }`}>
-                        {recipe.difficulty}
-                      </span>
+                      }`}>{recipe.difficulty}</span>
                     </div>
                   </div>
                 </Link>
-                
+
                 <div className="p-4">
                   <Link to={`/recipe/${recipe.id}`}>
                     <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
@@ -153,7 +108,7 @@ const MyRecipes: React.FC = () => {
                       {recipe.description}
                     </p>
                   </Link>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       {recipe.cooking_time} min • {recipe.total_ratings} reviews
@@ -162,14 +117,12 @@ const MyRecipes: React.FC = () => {
                       <button
                         onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
                         className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-500 transition-colors"
-                        title="Edit Recipe"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => deleteRecipe(recipe.id)}
+                        onClick={() => handleDelete(recipe.id)}
                         className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-500 transition-colors"
-                        title="Delete Recipe"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

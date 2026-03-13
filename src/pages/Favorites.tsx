@@ -1,56 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, ChefHat } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { Heart } from 'lucide-react';
+import { getFavorites, normalizeRecipe } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import RecipeCard from '../components/RecipeCard';
-import { Recipe } from '../types';
 
 const Favorites: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<Recipe[]>([]);
+  const [favorites, setFavorites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      fetchFavorites();
-    }
+    if (user) fetchFavorites();
+    else setLoading(false);
   }, [user]);
 
   const fetchFavorites = async () => {
-    if (!user) return;
-
     try {
-      const { data, error } = await supabase
-        .from('favorites')
-        .select(`
-          recipes(
-            *,
-            categories(name),
-            ratings(rating),
-            user_profiles(full_name)
-          )
-        `)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      const favoriteRecipes = data?.map(fav => {
-        const recipe = fav.recipes as any;
-        const ratings = recipe?.ratings || [];
-        const avgRating = ratings.length > 0 
-          ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length 
-          : 0;
-        
-        return {
-          ...recipe,
-          average_rating: avgRating,
-          total_ratings: ratings.length
-        } as Recipe;
-      }) || [];
-
-      setFavorites(favoriteRecipes);
+      const { data } = await getFavorites();
+      setFavorites((data || []).map(normalizeRecipe));
     } catch (error) {
       console.error('Error fetching favorites:', error);
     } finally {
@@ -71,13 +40,7 @@ const Favorites: React.FC = () => {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Please Sign In</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">You need to be logged in to view your favorites.</p>
-          <button
-            onClick={() => navigate('/auth')}
-            className="btn-primary"
-          >
-            Sign In
-          </button>
+          <button onClick={() => navigate('/auth')} className="btn-primary">Sign In</button>
         </div>
       </div>
     );
@@ -91,23 +54,17 @@ const Favorites: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Favorites</h1>
         </div>
 
-        <div className="text-center py-12">
-          <Heart className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Favorites Coming Soon!</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">We're working on bringing back the favorites feature. Stay tuned!</p>
-          <Link to="/recipes" className="btn-primary">
-            Browse Recipes
-          </Link>
-        </div>
-        {false && (
+        {favorites.length === 0 ? (
+          <div className="text-center py-12">
+            <Heart className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">Save recipes you love to find them quickly!</p>
+            <Link to="/recipes" className="btn-primary">Browse Recipes</Link>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {favorites.map((recipe) => (
-              <RecipeCard 
-                key={recipe.id} 
-                recipe={recipe} 
-                isFavorite={true}
-                onFavoriteToggle={fetchFavorites}
-              />
+              <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
           </div>
         )}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabase';
+import { getRecipes } from '../utils/api';
 
 interface Stats {
   recipesCount: number;
@@ -20,16 +20,15 @@ export const useStats = () => {
 
   const fetchStats = async () => {
     try {
-      const [recipesResult, usersResult, ratingsResult] = await Promise.all([
-        supabase.from('recipes').select('id', { count: 'exact', head: true }),
-        supabase.from('user_profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('ratings').select('id', { count: 'exact', head: true })
-      ]);
+      const { data } = await getRecipes();
+      const recipes = data.recipes || [];
+      const uniqueUsers = new Set(recipes.map((r: any) => r.userId?._id || r.userId)).size;
+      const totalRatings = recipes.reduce((sum: number, r: any) => sum + (r.ratingCount || 0), 0);
 
       setStats({
-        recipesCount: recipesResult.count || 0,
-        usersCount: usersResult.count || 0,
-        ratingsCount: ratingsResult.count || 0
+        recipesCount: recipes.length,
+        usersCount: uniqueUsers,
+        ratingsCount: totalRatings
       });
     } catch (error) {
       console.error('Error fetching stats:', error);

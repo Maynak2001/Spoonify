@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChefHat, Star, Users, Calendar } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { ChefHat, Star } from 'lucide-react';
+import { getRecipes } from '../utils/api';
 
 interface Chef {
   id: string;
-  full_name: string;
   username: string;
-  avatar_url: string | null;
-  created_at: string;
+  avatarUrl: string | null;
   recipe_count: number;
   avg_rating: number;
 }
@@ -23,49 +21,29 @@ const Chefs: React.FC = () => {
 
   const fetchChefs = async () => {
     try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select(`
-          id,
-          full_name,
-          username,
-          avatar_url,
-          created_at,
-          recipes!inner(id, ratings(rating))
-        `)
-        .order('created_at', { ascending: false });
+      const { data } = await getRecipes({ limit: 200 });
+      const recipes = data.recipes || [];
 
-      if (error) throw error;
-
-      // Get user metadata for Google profile images
-      const { data: authUsers } = await supabase.auth.admin.listUsers();
-      const userMetadataMap = new Map();
-      authUsers.users?.forEach(user => {
-        userMetadataMap.set(user.id, user.user_metadata);
+      const chefsMap = new Map<string, Chef>();
+      recipes.forEach((r: any) => {
+        const userId = r.userId?._id || r.userId;
+        if (!userId) return;
+        if (!chefsMap.has(userId)) {
+          chefsMap.set(userId, {
+            id: userId,
+            username: r.userId?.username || 'Unknown Chef',
+            avatarUrl: r.userId?.avatarUrl || null,
+            recipe_count: 0,
+            avg_rating: 0
+          });
+        }
+        const chef = chefsMap.get(userId)!;
+        const prev = chef.recipe_count;
+        chef.recipe_count += 1;
+        chef.avg_rating = ((chef.avg_rating * prev) + (r.averageRating || 0)) / chef.recipe_count;
       });
 
-      const chefsWithStats = data?.map(chef => {
-        const recipeCount = chef.recipes?.length || 0;
-        const allRatings = chef.recipes?.flatMap(recipe => recipe.ratings || []) || [];
-        const avgRating = allRatings.length > 0 
-          ? allRatings.reduce((sum, rating) => sum + rating.rating, 0) / allRatings.length 
-          : 0;
-
-        const userMetadata = userMetadataMap.get(chef.id) || {};
-        const profileImage = chef.avatar_url || userMetadata.avatar_url || userMetadata.picture;
-
-        return {
-          id: chef.id,
-          full_name: chef.full_name || userMetadata.full_name || 'Anonymous Chef',
-          username: chef.username,
-          avatar_url: profileImage,
-          created_at: chef.created_at,
-          recipe_count: recipeCount,
-          avg_rating: avgRating
-        };
-      }) || [];
-
-      setChefs(chefsWithStats);
+      setChefs(Array.from(chefsMap.values()));
     } catch (error) {
       console.error('Error fetching chefs:', error);
     } finally {
@@ -98,28 +76,16 @@ const Chefs: React.FC = () => {
             <div key={chef.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700">
               <div className="p-6 text-center">
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                  {chef.avatar_url ? (
-                    <img 
-                      src={chef.avatar_url} 
-                      alt={chef.full_name}
-                      className="w-full h-full object-cover"
-                    />
+                  {chef.avatarUrl ? (
+                    <img src={chef.avatarUrl} alt={chef.username} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <ChefHat className="h-10 w-10 text-gray-400" />
                     </div>
                   )}
                 </div>
-                
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                  {chef.full_name}
-                </h3>
-                
-                {chef.username && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                    @{chef.username}
-                  </p>
-                )}
+
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{chef.username}</h3>
 
                 <div className="flex justify-center space-x-4 mb-4 text-sm">
                   <div className="flex items-center space-x-1">
@@ -134,16 +100,8 @@ const Chefs: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex items-center justify-center space-x-1 text-xs text-gray-500 dark:text-gray-400 mb-4">
-                  <Calendar className="h-3 w-3" />
-                  <span>Joined {new Date(chef.created_at).toLocaleDateString()}</span>
-                </div>
-
-                <Link
-                  to={`/chef/${chef.id}`}
-                  className="w-full bg-primary-500 hover:bg-primary-600 py-2 px-4 rounded-lg transition-colors text-sm font-medium"
-                >
-                  <span className="text-white">View Profile</span>
+                <Link to={`/chef/${chef.id}`} className="block w-full bg-primary-500 hover:bg-primary-600 py-2 px-4 rounded-lg transition-colors text-sm font-medium text-white">
+                  View Profile
                 </Link>
               </div>
             </div>

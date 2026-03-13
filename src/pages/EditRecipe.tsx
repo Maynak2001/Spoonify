@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, X, Upload, Loader } from 'lucide-react';
-import { supabase, uploadImage } from '../utils/supabase';
+import * as api from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -34,7 +34,7 @@ const EditRecipe: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await supabase.from('categories').select('*').order('name');
+      const { data } = await api.getCategories();
       setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -57,15 +57,11 @@ const EditRecipe: React.FC = () => {
     if (!id || !user) return;
 
     try {
-      const { data, error } = await supabase
-        .from('recipes')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const response = await api.getRecipe(id);
+      const data = response.data;
 
-      if (error) throw error;
-
-      if (data.user_id !== user.id) {
+      const recipeUserId = (data.userId?._id || data.userId)?.toString();
+      if (recipeUserId !== user.id) {
         toast.error('You can only edit your own recipes');
         navigate('/my-recipes');
         return;
@@ -74,22 +70,17 @@ const EditRecipe: React.FC = () => {
       setFormData({
         title: data.title,
         description: data.description,
-        category: data.category,
-        difficulty: data.difficulty,
-        cooking_time: data.cooking_time,
-        ingredients: data.ingredients,
-        steps: data.steps,
-        image_url: data.image_url || '',
-        nutritional_info: data.nutritional_info || {
-          calories: 0,
-          protein: 0,
-          carbs: 0,
-          fat: 0,
-        }
+        category: data.categoryId?._id || data.categoryId || '',
+        difficulty: (data.difficulty?.charAt(0).toUpperCase() + data.difficulty?.slice(1)) as 'Easy' | 'Medium' | 'Hard',
+        cooking_time: data.cookTime || 30,
+        ingredients: data.ingredients || [''],
+        steps: data.instructions || [''],
+        image_url: data.imageUrl || '',
+        nutritional_info: { calories: 0, protein: 0, carbs: 0, fat: 0 }
       });
 
-      if (data.image_url) {
-        setImagePreview(data.image_url);
+      if (data.imageUrl) {
+        setImagePreview(data.imageUrl);
       }
     } catch (error) {
       toast.error('Error loading recipe');
@@ -194,39 +185,27 @@ const EditRecipe: React.FC = () => {
         return;
       }
 
-      let imageUrl = formData.image_url;
+      const recipeFormData = new FormData();
+      recipeFormData.append('title', formData.title.trim());
+      recipeFormData.append('description', formData.description.trim());
+      recipeFormData.append('categoryId', formData.category);
+      recipeFormData.append('difficulty', formData.difficulty.toLowerCase());
+      recipeFormData.append('cookTime', formData.cooking_time.toString());
+      recipeFormData.append('prepTime', '0');
+      recipeFormData.append('servings', '4');
+      recipeFormData.append('ingredients', JSON.stringify(validIngredients));
+      recipeFormData.append('instructions', JSON.stringify(validSteps));
       if (imageFile) {
-        try {
-          imageUrl = await uploadImage(imageFile);
-        } catch (uploadError) {
-          console.error('Image upload error:', uploadError);
-          toast.error('Error uploading image. Recipe will be updated without new image.');
-        }
+        recipeFormData.append('image', imageFile);
       }
 
-      const { error } = await supabase
-        .from('recipes')
-        .update({
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          category: formData.category,
-          difficulty: formData.difficulty,
-          cooking_time: formData.cooking_time,
-          ingredients: validIngredients,
-          steps: validSteps,
-          image_url: imageUrl,
-          nutritional_info: formData.nutritional_info,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
-
-      if (error) throw error;
+      await api.updateRecipe(id, recipeFormData);
 
       toast.success('Recipe updated successfully!');
       navigate(`/recipe/${id}`);
     } catch (error: any) {
       console.error('Error updating recipe:', error);
-      toast.error(error.message || 'Error updating recipe');
+      toast.error(error.response?.data?.message || error.message || 'Error updating recipe');
     } finally {
       setLoading(false);
     }
@@ -292,7 +271,7 @@ const EditRecipe: React.FC = () => {
                 >
                   <option value="">Select category</option>
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
+                    <option key={cat._id} value={cat._id}>
                       {cat.name}
                     </option>
                   ))}

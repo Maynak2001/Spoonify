@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, X, Upload, Loader } from 'lucide-react';
-import { supabase, uploadImage } from '../utils/supabase';
+import * as api from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -13,7 +13,6 @@ const AddRecipe: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [userRecipeCount, setUserRecipeCount] = useState(0);
-  const [canAddRecipe, setCanAddRecipe] = useState(true);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -32,29 +31,21 @@ const AddRecipe: React.FC = () => {
   });
 
   const fetchCategories = async () => {
-    const { data } = await supabase.from('categories').select('*').order('name');
+    const { data } = await api.getCategories();
     setCategories(data || []);
   };
 
-  const checkRecipeLimit = async () => {
+  const checkRecipeCount = async () => {
     if (!user) return;
-    
-    const { count, error } = await supabase
-      .from('recipes')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
-    
-    if (!error) {
-      setUserRecipeCount(count || 0);
-      setCanAddRecipe((count || 0) < 5);
-    }
+    try {
+      const { data } = await api.getRecipes({ userId: user.id });
+      setUserRecipeCount((data?.recipes || []).length);
+    } catch {}
   };
 
   useEffect(() => {
     fetchCategories();
-    if (user) {
-      checkRecipeLimit();
-    }
+    if (user) checkRecipeCount();
   }, [user]);
 
   if (authLoading) {
@@ -77,36 +68,6 @@ const AddRecipe: React.FC = () => {
           >
             Sign In
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!canAddRecipe) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <div className="bg-yellow-100 dark:bg-yellow-900/20 rounded-full p-4 w-16 h-16 mx-auto mb-4">
-            <span className="text-2xl">🍳</span>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Recipe Limit Reached</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            You've reached the maximum limit of 5 recipes ({userRecipeCount}/5). To add more recipes, please contact our support team or upgrade your account.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => navigate('/my-recipes')}
-              className="btn-secondary"
-            >
-              View My Recipes
-            </button>
-            <button
-              onClick={() => navigate('/contact')}
-              className="btn-primary"
-            >
-              Contact Support
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -208,42 +169,28 @@ const AddRecipe: React.FC = () => {
         return;
       }
 
-      // Upload image if provided
-      let imageUrl = '';
+      // Build FormData for backend API
+      const recipeFormData = new FormData();
+      recipeFormData.append('title', formData.title.trim());
+      recipeFormData.append('description', formData.description.trim());
+      recipeFormData.append('categoryId', formData.category);
+      recipeFormData.append('difficulty', formData.difficulty.toLowerCase());
+      recipeFormData.append('cookTime', formData.cooking_time.toString());
+      recipeFormData.append('prepTime', '0');
+      recipeFormData.append('servings', '4');
+      recipeFormData.append('ingredients', JSON.stringify(validIngredients));
+      recipeFormData.append('instructions', JSON.stringify(validSteps));
       if (imageFile) {
-        try {
-          imageUrl = await uploadImage(imageFile);
-        } catch (uploadError) {
-          console.error('Image upload error:', uploadError);
-          toast.error('Error uploading image. Recipe will be created without image.');
-        }
+        recipeFormData.append('image', imageFile);
       }
 
-      // Create recipe
-      const { data, error } = await supabase
-        .from('recipes')
-        .insert({
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          category: formData.category,
-          difficulty: formData.difficulty,
-          cooking_time: formData.cooking_time,
-          ingredients: validIngredients,
-          steps: validSteps,
-          image_url: imageUrl,
-          nutritional_info: formData.nutritional_info,
-          user_id: user.id
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+      const response = await api.createRecipe(recipeFormData);
 
       toast.success('Recipe created successfully!');
-      navigate(`/recipe/${data.id}`);
+      navigate(`/recipe/${response.data._id}`);
     } catch (error: any) {
       console.error('Error creating recipe:', error);
-      toast.error(error.message || 'Error creating recipe');
+      toast.error(error.response?.data?.message || error.message || 'Error creating recipe');
     } finally {
       setLoading(false);
     }
@@ -289,7 +236,7 @@ const AddRecipe: React.FC = () => {
                 >
                   <option value="">Select category</option>
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
+                    <option key={cat._id} value={cat._id}>
                       {cat.name}
                     </option>
                   ))}

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Clock, Users, Star, Heart, ArrowLeft, Edit, Trash2 } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { getRecipe, deleteRecipe, addRating, normalizeRecipe } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
-import { Recipe, Rating } from '../types';
 import CommentSection from '../components/CommentSection';
 import toast from 'react-hot-toast';
 
@@ -11,77 +10,22 @@ const RecipeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [recipe, setRecipe] = useState<any>(null);
   const [userRating, setUserRating] = useState<number>(0);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      fetchRecipe();
-      if (user) {
-        checkFavoriteStatus();
-        fetchUserRating();
-      }
-    }
-  }, [id, user]);
+    if (id) fetchRecipe();
+  }, [id]);
 
   const fetchRecipe = async () => {
     try {
-      const { data, error } = await supabase
-        .from('recipes')
-        .select(`
-          *,
-          categories(name),
-          user_profiles(full_name),
-          ratings(rating)
-        `)
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-
-      // Calculate average rating
-      const ratings = data.ratings || [];
-      const avgRating = ratings.length > 0 
-        ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length 
-        : 0;
-
-      setRecipe({
-        ...data,
-        average_rating: avgRating,
-        total_ratings: ratings.length
-      });
+      const { data } = await getRecipe(id!);
+      setRecipe(normalizeRecipe(data));
     } catch (error) {
       toast.error('Error loading recipe');
     } finally {
       setLoading(false);
-    }
-  };
-
-
-
-  const checkFavoriteStatus = async () => {
-    // Temporarily disabled
-    setIsFavorite(false);
-  };
-
-  const fetchUserRating = async () => {
-    const { data } = await supabase
-      .from('ratings')
-      .select('rating')
-      .eq('recipe_id', id)
-      .eq('user_id', user?.id)
-      .single();
-
-    setUserRating(data?.rating || 0);
-  };
-
-  const toggleFavorite = async () => {
-    if (!user) {
-      toast.error('Please sign in to save favorites');
-    } else {
-      toast.error('Favorites feature temporarily disabled');
     }
   };
 
@@ -90,25 +34,26 @@ const RecipeDetail: React.FC = () => {
       toast.error('Please sign in to rate recipes');
       return;
     }
-
     try {
-      await supabase
-        .from('ratings')
-        .upsert({ 
-          recipe_id: id, 
-          user_id: user.id, 
-          rating 
-        });
-      
+      await addRating({ recipeId: id!, rating });
       setUserRating(rating);
-      fetchRecipe(); // Refresh to get updated average
+      fetchRecipe();
       toast.success('Rating submitted');
     } catch (error) {
       toast.error('Error submitting rating');
     }
   };
 
-
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this recipe?')) return;
+    try {
+      await deleteRecipe(id!);
+      toast.success('Recipe deleted successfully');
+      navigate('/my-recipes');
+    } catch (error) {
+      toast.error('Error deleting recipe');
+    }
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -132,9 +77,7 @@ const RecipeDetail: React.FC = () => {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Recipe not found</h2>
-          <Link to="/recipes" className="btn-primary">
-            Back to Recipes
-          </Link>
+          <Link to="/recipes" className="btn-primary">Back to Recipes</Link>
         </div>
       </div>
     );
@@ -143,29 +86,27 @@ const RecipeDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="inline-flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back</span>
         </button>
 
-        {/* Recipe Header */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
           <img
             src={recipe.image_url || 'https://images.unsplash.com/photo-1546548970-71785318a17b?w=800&h=400&fit=crop&crop=center'}
             alt={recipe.title}
             className="w-full h-64 md:h-80 object-cover"
           />
-          
+
           <div className="p-6">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4 gap-4">
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{recipe.title}</h1>
                 <p className="text-gray-600 dark:text-gray-300 text-lg mb-4">{recipe.description}</p>
-                
+
                 <div className="flex flex-wrap items-center gap-4 mb-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(recipe.difficulty)}`}>
                     {recipe.difficulty}
@@ -178,7 +119,7 @@ const RecipeDetail: React.FC = () => {
                     <Users className="h-4 w-4" />
                     <span>4 servings</span>
                   </div>
-                  {recipe.average_rating && recipe.average_rating > 0 && (
+                  {recipe.average_rating > 0 && (
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 fill-current text-yellow-400" />
                       <span>{recipe.average_rating.toFixed(1)}</span>
@@ -187,54 +128,33 @@ const RecipeDetail: React.FC = () => {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex space-x-2">
                 {user && user.id === recipe.user_id && (
                   <>
                     <button
                       onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
                       className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-primary-500 hover:text-white transition-colors"
-                      title="Edit Recipe"
                     >
                       <Edit className="h-6 w-6" />
                     </button>
                     <button
-                      onClick={async () => {
-                        if (window.confirm('Are you sure you want to delete this recipe?')) {
-                          try {
-                            const { error } = await supabase
-                              .from('recipes')
-                              .delete()
-                              .eq('id', recipe.id);
-                            if (error) throw error;
-                            toast.success('Recipe deleted successfully');
-                            navigate('/my-recipes');
-                          } catch (error) {
-                            toast.error('Error deleting recipe');
-                          }
-                        }
-                      }}
+                      onClick={handleDelete}
                       className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white transition-colors"
-                      title="Delete Recipe"
                     >
                       <Trash2 className="h-6 w-6" />
                     </button>
                   </>
                 )}
                 <button
-                  onClick={toggleFavorite}
-                  className={`p-3 rounded-full transition-colors ${
-                    isFavorite 
-                      ? 'bg-red-500 text-white' 
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white'
-                  }`}
+                  onClick={() => toast.error('Favorites coming soon')}
+                  className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white transition-colors"
                 >
-                  <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} />
+                  <Heart className="h-6 w-6" />
                 </button>
               </div>
             </div>
 
-            {/* Rating */}
             {user && (
               <div className="mb-4">
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rate this recipe:</p>
@@ -243,9 +163,7 @@ const RecipeDetail: React.FC = () => {
                     <button
                       key={star}
                       onClick={() => submitRating(star)}
-                      className={`p-1 ${
-                        star <= userRating ? 'text-yellow-400' : 'text-gray-300'
-                      } hover:text-yellow-400 transition-colors`}
+                      className={`p-1 ${star <= userRating ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400 transition-colors`}
                     >
                       <Star className="h-6 w-6 fill-current" />
                     </button>
@@ -257,12 +175,11 @@ const RecipeDetail: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Ingredients */}
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ingredients</h2>
               <ul className="space-y-2">
-                {recipe.ingredients.map((ingredient, index) => (
+                {recipe.ingredients.map((ingredient: string, index: number) => (
                   <li key={index} className="flex items-start space-x-2">
                     <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></span>
                     <span className="text-gray-700 dark:text-gray-300">{ingredient}</span>
@@ -270,39 +187,13 @@ const RecipeDetail: React.FC = () => {
                 ))}
               </ul>
             </div>
-
-            {/* Nutritional Info */}
-            {recipe.nutritional_info && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Nutrition Facts</h2>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Calories</span>
-                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.calories}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Protein</span>
-                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.protein}g</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Carbs</span>
-                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.carbs}g</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Fat</span>
-                    <span className="font-medium text-gray-900 dark:text-white">{recipe.nutritional_info.fat}g</span>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Instructions */}
           <div className="lg:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Instructions</h2>
               <ol className="space-y-4">
-                {recipe.steps.map((step, index) => (
+                {recipe.steps.map((step: string, index: number) => (
                   <li key={index} className="flex space-x-4">
                     <span className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-medium">
                       {index + 1}
@@ -313,7 +204,6 @@ const RecipeDetail: React.FC = () => {
               </ol>
             </div>
 
-            {/* Comments */}
             <CommentSection recipeId={id!} />
           </div>
         </div>
