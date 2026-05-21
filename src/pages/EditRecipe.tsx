@@ -35,7 +35,7 @@ const EditRecipe: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const { data } = await api.getCategories();
-      setCategories(data || []);
+      setCategories((data || []).filter((cat: any) => cat.name?.toLowerCase() !== 'pakistani'));
     } catch (error) {
       console.error('Error fetching categories:', error);
     }

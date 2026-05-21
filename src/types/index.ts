@@ -11,6 +11,8 @@ export interface Recipe {
   nutritional_info?: NutritionalInfo;
   created_at: string;
   user_id: string;
+  user_name?: string;
+  category_name?: string;
   average_rating?: number;
   total_ratings?: number;
 }

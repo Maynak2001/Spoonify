@@ -122,6 +122,7 @@ export const normalizeRecipe = (r: any) => ({
   total_ratings: r.ratingCount || 0,
   created_at: r.createdAt,
   nutritional_info: r.nutritionalInfo || null,
+  servings: r.servings || null,
 });
 
 export default api;

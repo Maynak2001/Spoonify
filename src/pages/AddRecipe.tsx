@@ -20,6 +20,7 @@ const AddRecipe: React.FC = () => {
     category: '',
     difficulty: 'Easy' as 'Easy' | 'Medium' | 'Hard',
     cooking_time: 30,
+    servings: 4,
     ingredients: [''],
     steps: [''],
     nutritional_info: {
@@ -32,7 +33,7 @@ const AddRecipe: React.FC = () => {
 
   const fetchCategories = async () => {
     const { data } = await api.getCategories();
-    setCategories(data || []);
+    setCategories((data || []).filter((cat: any) => cat.name?.toLowerCase() !== 'pakistani'));
   };
 
   const checkRecipeCount = async () => {
@@ -177,7 +178,7 @@ const AddRecipe: React.FC = () => {
       recipeFormData.append('difficulty', formData.difficulty.toLowerCase());
       recipeFormData.append('cookTime', formData.cooking_time.toString());
       recipeFormData.append('prepTime', '0');
-      recipeFormData.append('servings', '4');
+      recipeFormData.append('servings', formData.servings.toString());
       recipeFormData.append('ingredients', JSON.stringify(validIngredients));
       recipeFormData.append('instructions', JSON.stringify(validSteps));
       if (imageFile) {
@@ -286,6 +287,20 @@ const AddRecipe: React.FC = () => {
                   className="input-field"
                   min="1"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Servings
+                </label>
+                <input
+                  type="number"
+                  value={formData.servings}
+                  onChange={(e) => handleInputChange('servings', parseInt(e.target.value) || 1)}
+                  className="input-field"
+                  min="1"
+                  max="50"
                 />
               </div>
             </div>
