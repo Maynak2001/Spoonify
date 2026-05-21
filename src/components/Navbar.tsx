@@ -55,7 +55,8 @@ const FloatingNavbar: React.FC = () => {
   ];
 
   return (
-    <div className="fixed top-0 inset-x-0 z-50 flex justify-center px-4 pt-3 pointer-events-none">
+    <>
+    <div className="fixed top-0 inset-x-0 z-[55] flex justify-center px-4 pt-3 pointer-events-none">
       <nav className={`pointer-events-auto w-full max-w-5xl transition-all duration-300 ${
         scrolled
           ? 'bg-[#080808]/90 backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.6)] py-2 rounded-2xl'
@@ -222,10 +223,11 @@ const FloatingNavbar: React.FC = () => {
           </div>
         </div>
       </nav>
+    </div>
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[#080808]/98 backdrop-blur-2xl md:hidden flex flex-col pt-20 px-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 bg-[#080808]/98 backdrop-blur-2xl md:hidden flex flex-col pt-20 px-6 animate-fade-in">
           <nav className="flex flex-col gap-1 mt-6">
             {MAIN_LINKS.map(({ to, label }) => (
               <Link
@@ -296,7 +298,7 @@ const FloatingNavbar: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

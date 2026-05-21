@@ -71,17 +71,17 @@ const ChefProfile: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-white/10 border-t-[#d4a843] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!chefName && recipes.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Chef not found</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Chef not found</h2>
           <Link to="/chefs" className="btn-primary">Back to Chefs</Link>
         </div>
       </div>
@@ -89,33 +89,33 @@ const ChefProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link to="/chefs" className="inline-flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 mb-6 transition-colors">
+    <div className="min-h-screen bg-[#080808]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-28">
+        <Link to="/chefs" className="inline-flex items-center space-x-2 text-gray-500 hover:text-[#d4a843] mb-6 transition-colors">
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Chefs</span>
         </Link>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-8">
+        <div className="bg-[#111] rounded-2xl border border-white/[0.06] overflow-hidden mb-8">
+          <div className="bg-gradient-to-r from-[#1a1200] to-[#0e0e0e] px-6 py-8 border-b border-white/[0.06]">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-white shadow-lg flex items-center justify-center">
-                  <ChefHat className="h-12 w-12 text-primary-500" />
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-[#d4a843]/10 border border-[#d4a843]/20 flex items-center justify-center">
+                  <ChefHat className="h-12 w-12 text-[#d4a843]" />
                 </div>
-                <div className="text-center sm:text-left text-white">
-                  <h1 className="text-2xl sm:text-3xl font-bold mb-1">{chefName}</h1>
-                  <p className="text-white/70 text-sm">{stats.totalRecipes} recipes shared</p>
+                <div className="text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">{chefName}</h1>
+                  <p className="text-gray-500 text-sm">{stats.totalRecipes} recipes shared</p>
                 </div>
               </div>
 
               {user && !isOwnProfile && (
                 <button
                   onClick={handleFollowToggle}
-                  className={`flex items-center space-x-2 px-6 py-2.5 rounded-lg font-medium text-sm transition-all ${
+                  className={`flex items-center space-x-2 px-6 py-2.5 rounded-xl font-medium text-sm transition-all ${
                     following
-                      ? 'bg-white/20 text-white border border-white/40 hover:bg-white/30'
-                      : 'bg-white text-primary-600 hover:bg-gray-50'
+                      ? 'bg-[#d4a843]/10 text-[#d4a843] border border-[#d4a843]/30 hover:bg-[#d4a843]/20'
+                      : 'bg-[#d4a843] text-black hover:bg-[#e0b855]'
                   }`}
                 >
                   {following ? (
@@ -134,24 +134,24 @@ const ChefProfile: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-700">
+          <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
             <div className="px-6 py-4 text-center">
-              <ChefHat className="h-6 w-6 text-primary-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalRecipes}</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Recipes</div>
+              <ChefHat className="h-6 w-6 text-[#d4a843] mx-auto mb-2" />
+              <div className="text-2xl font-bold text-white">{stats.totalRecipes}</div>
+              <div className="text-sm text-gray-500">Recipes</div>
             </div>
             <div className="px-6 py-4 text-center">
-              <Star className="h-6 w-6 text-yellow-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <Star className="h-6 w-6 text-[#d4a843] mx-auto mb-2" />
+              <div className="text-2xl font-bold text-white">
                 {stats.avgRating > 0 ? stats.avgRating.toFixed(1) : '0.0'}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Avg Rating</div>
+              <div className="text-sm text-gray-500">Avg Rating</div>
             </div>
           </div>
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-2xl font-bold text-white mb-6">
             Recipes by {chefName} ({recipes.length})
           </h2>
 
@@ -163,9 +163,9 @@ const ChefProfile: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <ChefHat className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No recipes yet</h3>
-              <p className="text-gray-600 dark:text-gray-300">This chef hasn't shared any recipes yet.</p>
+              <ChefHat className="h-16 w-16 text-white/10 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">No recipes yet</h3>
+              <p className="text-gray-500">This chef hasn't shared any recipes yet.</p>
             </div>
           )}
         </div>

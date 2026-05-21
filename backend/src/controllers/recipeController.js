@@ -23,7 +23,8 @@ exports.createRecipe = async (req, res) => {
       imageUrl,
       userId: req.user._id,
       ingredients: JSON.parse(req.body.ingredients),
-      instructions: JSON.parse(req.body.instructions)
+      instructions: JSON.parse(req.body.instructions),
+      nutritionalInfo: req.body.nutritionalInfo ? JSON.parse(req.body.nutritionalInfo) : null
     });
 
     res.status(201).json(recipe);
@@ -112,6 +113,7 @@ exports.updateRecipe = async (req, res) => {
         imageUrl,
         ingredients: req.body.ingredients ? JSON.parse(req.body.ingredients) : recipe.ingredients,
         instructions: req.body.instructions ? JSON.parse(req.body.instructions) : recipe.instructions,
+        nutritionalInfo: req.body.nutritionalInfo ? JSON.parse(req.body.nutritionalInfo) : recipe.nutritionalInfo,
         updatedAt: Date.now()
       },
       { new: true }

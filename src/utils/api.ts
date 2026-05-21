@@ -83,12 +83,14 @@ const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.8
     const img = new Image();
     
     img.onload = () => {
+      const objectUrl = img.src;
       const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
       canvas.width = img.width * ratio;
       canvas.height = img.height * ratio;
-      
+
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      
+      URL.revokeObjectURL(objectUrl);
+
       canvas.toBlob((blob) => {
         const compressedFile = new File([blob!], file.name, {
           type: 'image/jpeg',
@@ -97,8 +99,9 @@ const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.8
         resolve(compressedFile);
       }, 'image/jpeg', quality);
     };
-    
-    img.src = URL.createObjectURL(file);
+
+    const objectUrl = URL.createObjectURL(file);
+    img.src = objectUrl;
   });
 };
 

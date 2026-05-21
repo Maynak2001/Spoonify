@@ -102,7 +102,7 @@ const RecipeDetail: React.FC = () => {
 
   const handleAddToShoppingList = () => {
     const scaled = recipe.ingredients.map((ing: string) => scaleIngredient(ing, scale));
-    addIngredients(scaled, recipe.title, recipe.id);
+    addIngredients(scaled, recipe.id, recipe.title);
     addNotification({ type: 'shopping', title: 'Added to Shopping List', message: `${scaled.length} ingredients from "${recipe.title}"`, link: '/shopping-list' });
     toast.success(`${scaled.length} ingredients added!`);
   };

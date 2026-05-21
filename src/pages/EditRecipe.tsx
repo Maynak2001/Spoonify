@@ -71,7 +71,7 @@ const EditRecipe: React.FC = () => {
         title: data.title,
         description: data.description,
         category: data.categoryId?._id || data.categoryId || '',
-        difficulty: (data.difficulty?.charAt(0).toUpperCase() + data.difficulty?.slice(1)) as 'Easy' | 'Medium' | 'Hard',
+        difficulty: data.difficulty ? (data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1)) as 'Easy' | 'Medium' | 'Hard' : 'Easy',
         cooking_time: data.cookTime || 30,
         ingredients: data.ingredients || [''],
         steps: data.instructions || [''],
@@ -195,6 +195,9 @@ const EditRecipe: React.FC = () => {
       recipeFormData.append('servings', '4');
       recipeFormData.append('ingredients', JSON.stringify(validIngredients));
       recipeFormData.append('instructions', JSON.stringify(validSteps));
+      recipeFormData.append('nutritionalInfo', JSON.stringify(formData.nutritional_info));
+      recipeFormData.append('userId', user.id);
+
       if (imageFile) {
         recipeFormData.append('image', imageFile);
       }
@@ -213,40 +216,35 @@ const EditRecipe: React.FC = () => {
 
   if (pageLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-white/10 border-t-[#d4a843] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Sign In</h2>
-          <p className="text-gray-600 mb-4">You need to be logged in to edit recipes.</p>
-          <button
-            onClick={() => navigate('/auth')}
-            className="btn-primary"
-          >
-            Sign In
-          </button>
+          <h2 className="text-2xl font-bold text-white mb-4">Please Sign In</h2>
+          <p className="text-gray-500 mb-4">You need to be logged in to edit recipes.</p>
+          <button onClick={() => navigate('/auth')} className="btn-primary">Sign In</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-[#080808] py-8 pt-24 sm:pt-28">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Edit Recipe</h1>
+        <div className="bg-[#111] rounded-2xl border border-white/[0.06] p-6">
+          <h1 className="text-3xl font-bold text-white mb-8">Edit Recipe</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
                   Recipe Title *
                 </label>
                 <input
@@ -260,7 +258,7 @@ const EditRecipe: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
                   Category *
                 </label>
                 <select
@@ -280,7 +278,7 @@ const EditRecipe: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Description *
               </label>
               <textarea
@@ -296,7 +294,7 @@ const EditRecipe: React.FC = () => {
             {/* Recipe Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
                   Difficulty
                 </label>
                 <select
@@ -311,7 +309,7 @@ const EditRecipe: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
                   Cooking Time (minutes)
                 </label>
                 <input
@@ -327,10 +325,10 @@ const EditRecipe: React.FC = () => {
 
             {/* Image Upload */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Recipe Image
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <div className="border-2 border-dashed border-white/10 rounded-xl p-6 text-center">
                 {imagePreview ? (
                   <div className="relative">
                     <img
@@ -351,8 +349,8 @@ const EditRecipe: React.FC = () => {
                   </div>
                 ) : (
                   <div>
-                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">Upload a photo of your dish</p>
+                    <Upload className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">Upload a photo of your dish</p>
                     <input
                       type="file"
                       accept="image/*"
@@ -374,7 +372,7 @@ const EditRecipe: React.FC = () => {
             {/* Ingredients */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-400">
                   Ingredients *
                 </label>
                 <button
@@ -400,7 +398,7 @@ const EditRecipe: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => removeIngredient(index)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -413,7 +411,7 @@ const EditRecipe: React.FC = () => {
             {/* Steps */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-400">
                   Instructions *
                 </label>
                 <button
@@ -428,7 +426,7 @@ const EditRecipe: React.FC = () => {
               <div className="space-y-3">
                 {formData.steps.map((step, index) => (
                   <div key={index} className="flex space-x-2">
-                    <span className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-medium mt-1">
+                    <span className="flex-shrink-0 w-8 h-8 bg-[#d4a843] text-black rounded-full flex items-center justify-center font-medium mt-1">
                       {index + 1}
                     </span>
                     <textarea
@@ -442,7 +440,7 @@ const EditRecipe: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => removeStep(index)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg mt-1"
+                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg mt-1"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -454,12 +452,12 @@ const EditRecipe: React.FC = () => {
 
             {/* Nutritional Info */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">
+              <label className="block text-sm font-medium text-gray-400 mb-4">
                 Nutritional Information (per serving)
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Calories</label>
+                  <label className="block text-xs text-gray-500 mb-1">Calories</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.calories}
@@ -469,7 +467,7 @@ const EditRecipe: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Protein (g)</label>
+                  <label className="block text-xs text-gray-500 mb-1">Protein (g)</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.protein}
@@ -479,7 +477,7 @@ const EditRecipe: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Carbs (g)</label>
+                  <label className="block text-xs text-gray-500 mb-1">Carbs (g)</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.carbs}
@@ -489,7 +487,7 @@ const EditRecipe: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Fat (g)</label>
+                  <label className="block text-xs text-gray-500 mb-1">Fat (g)</label>
                   <input
                     type="number"
                     value={formData.nutritional_info.fat}

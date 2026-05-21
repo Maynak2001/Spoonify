@@ -13,6 +13,7 @@ const MyRecipes: React.FC = () => {
 
   useEffect(() => {
     if (user) fetchMyRecipes();
+    else setLoading(false);
   }, [user]);
 
   const fetchMyRecipes = async () => {
@@ -40,17 +41,17 @@ const MyRecipes: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-white/10 border-t-[#d4a843] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Please Sign In</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">Please Sign In</h2>
           <button onClick={() => navigate('/auth')} className="btn-primary">Sign In</button>
         </div>
       </div>
@@ -58,12 +59,12 @@ const MyRecipes: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-[#080808]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-28">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-3">
-            <ChefHat className="h-8 w-8 text-primary-500" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Recipes</h1>
+            <ChefHat className="h-8 w-8 text-[#d4a843]" />
+            <h1 className="text-3xl font-bold text-white">My Recipes</h1>
           </div>
           <Link to="/add-recipe" className="btn-primary flex items-center space-x-2">
             <Plus className="h-4 w-4" />
@@ -73,9 +74,9 @@ const MyRecipes: React.FC = () => {
 
         {recipes.length === 0 ? (
           <div className="text-center py-12">
-            <ChefHat className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No recipes yet</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">Share your first recipe with the community!</p>
+            <ChefHat className="h-16 w-16 text-white/10 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-2">No recipes yet</h3>
+            <p className="text-gray-500 mb-4">Share your first recipe with the community!</p>
             <Link to="/add-recipe" className="btn-primary">Add Your First Recipe</Link>
           </div>
         ) : (
@@ -90,10 +91,10 @@ const MyRecipes: React.FC = () => {
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute bottom-3 left-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        recipe.difficulty === 'Easy' ? 'text-green-600 bg-green-50' :
-                        recipe.difficulty === 'Medium' ? 'text-yellow-600 bg-yellow-50' :
-                        'text-red-600 bg-red-50'
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
+                        recipe.difficulty === 'Easy' ? 'bg-emerald-500/20 text-emerald-400' :
+                        recipe.difficulty === 'Medium' ? 'bg-[#d4a843]/20 text-[#d4a843]' :
+                        'bg-rose-500/20 text-rose-400'
                       }`}>{recipe.difficulty}</span>
                     </div>
                   </div>
@@ -101,28 +102,28 @@ const MyRecipes: React.FC = () => {
 
                 <div className="p-4">
                   <Link to={`/recipe/${recipe.id}`}>
-                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                    <h3 className="font-semibold text-lg text-white mb-2 line-clamp-2 group-hover:text-[#d4a843] transition-colors">
                       {recipe.title}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
+                    <p className="text-gray-500 text-sm mb-3 line-clamp-2">
                       {recipe.description}
                     </p>
                   </Link>
 
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center justify-between border-t border-white/[0.05] pt-3">
+                    <div className="text-sm text-gray-600">
                       {recipe.cooking_time} min • {recipe.total_ratings} reviews
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-1">
                       <button
                         onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
-                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-500 transition-colors"
+                        className="p-2 rounded-lg text-gray-500 hover:text-[#d4a843] hover:bg-white/[0.05] transition-all"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(recipe.id)}
-                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-500 transition-colors"
+                        className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

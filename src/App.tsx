@@ -50,7 +50,7 @@ function App() {
       <AuthProvider>
         <NotificationProvider>
           <ShoppingListProvider>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Router future={{ v7_relativeSplatPath: true }}>
           <ScrollToTop />
           <AppLayout />
         </Router>
